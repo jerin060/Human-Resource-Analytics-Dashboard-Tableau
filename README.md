@@ -110,6 +110,8 @@ HR-Analytics-Dashboard/
 ├── Documentation/
 │   └── Project_Documentation.md
 │
+├── banner.png
+|
 ├── README.md
 └── LICENSE
 ```
