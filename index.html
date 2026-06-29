@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HR Analytics Dashboard — BI Documentation</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#F7F5F0;
+    --bg-card:#FFFFFF;
+    --ink:#171A1F;
+    --ink-soft:#5B616B;
+    --ink-faint:#90959E;
+    --sidebar-bg:#10131A;
+    --sidebar-text:#9CA3AF;
+    --sidebar-text-active:#F4F2EC;
+    --teal:#16BFA0;
+    --teal-deep:#0E9C82;
+    --pink:#E84393;
+    --amber:#C9842E;
+    --line:#E6E2D8;
+    --line-soft:#EFEBE2;
+    --mono-bg:#12151B;
+    --mono-text:#D9E0E8;
+    --radius:10px;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:'IBM Plex Sans',sans-serif;
+    font-size:16px;
+    line-height:1.65;
+  }
+  h1,h2,h3,h4{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:600;
+    color:var(--ink);
+    letter-spacing:-0.01em;
+  }
+  code, .mono{
+    font-family:'IBM Plex Mono',monospace;
+  }
+  a{color:var(--teal-deep); text-decoration:none;}
+  a:hover{text-decoration:underline;}
+
+  /* ---------- LAYOUT ---------- */
+  .shell{
+    display:flex;
+    min-height:100vh;
+  }
+  .sidebar{
+    width:268px;
+    flex-shrink:0;
+    background:var(--sidebar-bg);
+    color:var(--sidebar-text);
+    position:sticky;
+    top:0;
+    height:100vh;
+    overflow-y:auto;
+    padding:28px 22px 40px;
+  }
+  .sidebar::-webkit-scrollbar{width:6px;}
+  .sidebar::-webkit-scrollbar-thumb{background:#2A2F3A;border-radius:4px;}
+
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:6px;
+  }
+  .brand-mark{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:22px;
+    letter-spacing:-0.02em;
+  }
+  .brand-mark .h{color:var(--teal);}
+  .brand-mark .r{color:var(--pink);}
+  .brand-sub{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.12em;
+    color:#6B7280;
+    margin:2px 0 26px;
+  }
+  .nav-group{margin-bottom:22px;}
+  .nav-label{
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.14em;
+    color:#565C68;
+    margin:0 0 8px 2px;
+  }
+  .sidebar nav a{
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+    padding:7px 8px;
+    border-radius:7px;
+    font-size:13.6px;
+    color:var(--sidebar-text);
+    transition:background .15s, color .15s;
+  }
+  .sidebar nav a:hover{background:#1A1E27; text-decoration:none; color:var(--sidebar-text-active);}
+  .sidebar nav a.active{
+    background:#171B24;
+    color:var(--sidebar-text-active);
+    box-shadow:inset 2px 0 0 var(--teal);
+  }
+  .sidebar nav a .num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    color:var(--teal);
+    min-width:18px;
+  }
+  .sidebar-foot{
+    margin-top:30px;
+    padding-top:16px;
+    border-top:1px solid #1E222B;
+    font-size:11px;
+    color:#565C68;
+    line-height:1.7;
+  }
+
+  .main{
+    flex:1;
+    max-width:920px;
+    padding:56px 64px 120px;
+    margin:0 auto;
+  }
+  @media (max-width:860px){
+    .sidebar{display:none;}
+    .main{padding:36px 22px 90px;}
+  }
+
+  /* ---------- COVER ---------- */
+  .cover{
+    border-bottom:1px solid var(--line);
+    padding-bottom:34px;
+    margin-bottom:46px;
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:12px;
+    letter-spacing:.08em;
+    color:var(--teal-deep);
+    text-transform:uppercase;
+    margin-bottom:14px;
+  }
+  .cover h1{
+    font-size:38px;
+    line-height:1.12;
+    margin:0 0 12px;
+  }
+  .cover p.lede{
+    font-size:17px;
+    color:var(--ink-soft);
+    max-width:640px;
+    margin:0 0 24px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:28px;
+    margin-top:20px;
+  }
+  .meta-item{font-size:12.5px; color:var(--ink-soft);}
+  .meta-item span{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13.5px;
+    color:var(--ink);
+    margin-top:3px;
+  }
+
+  /* ---------- SECTIONS ---------- */
+  section{margin-bottom:62px; scroll-margin-top:30px;}
+  .sec-head{
+    display:flex;
+    align-items:baseline;
+    gap:14px;
+    margin-bottom:18px;
+  }
+  .sec-num{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:14px;
+    color:var(--teal-deep);
+    background:#E8F8F3;
+    border:1px solid #C9EEE3;
+    border-radius:6px;
+    padding:2px 8px;
+  }
+  .sec-head h2{font-size:24px; margin:0;}
+  .sub h3{font-size:17px; margin:30px 0 10px;}
+  .sub h4{font-size:14.5px; margin:20px 0 8px; color:var(--ink-soft); text-transform:uppercase; letter-spacing:.04em;}
+
+  p{color:#33373D;}
+  .lead-text{color:var(--ink-soft); font-size:15px;}
+
+  ul.std, ol.std{padding-left:22px; color:#33373D;}
+  ul.std li, ol.std li{margin-bottom:7px;}
+
+  /* ---------- CARD / SCREENSHOT ---------- */
+  figure{margin:24px 0;}
+  figure img{
+    width:100%;
+    display:block;
+    border-radius:var(--radius);
+    border:1px solid var(--line);
+    box-shadow:0 10px 30px rgba(20,20,15,.08);
+  }
+  figcaption{
+    font-size:12px;
+    color:var(--ink-faint);
+    margin-top:8px;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .shot-pair{display:grid; grid-template-columns:1fr 1fr; gap:18px;}
+  @media (max-width:700px){.shot-pair{grid-template-columns:1fr;}}
+
+  /* ---------- LEGEND DOT ---------- */
+  .dot{display:inline-block; width:9px; height:9px; border-radius:50%; margin-right:6px;}
+  .dot.teal{background:var(--teal);}
+  .dot.pink{background:var(--pink);}
+
+  /* ---------- INFO / WARNING CALLOUTS ---------- */
+  .callout{
+    border-left:3px solid var(--teal);
+    background:#F2FBF8;
+    border-radius:0 8px 8px 0;
+    padding:14px 18px;
+    margin:18px 0;
+    font-size:14.5px;
+    color:#1F4A40;
+  }
+  .callout strong{color:#0B6F5C;}
+  .callout.warn{
+    border-left-color:var(--amber);
+    background:#FBF4E9;
+    color:#5C4319;
+  }
+  .callout.warn strong{color:var(--amber);}
+
+  /* ---------- TABLES ---------- */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    margin:18px 0 8px;
+    font-size:14px;
+  }
+  thead th{
+    text-align:left;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:var(--ink-faint);
+    border-bottom:1.5px solid var(--ink);
+    padding:9px 10px;
+  }
+  tbody td{
+    padding:11px 10px;
+    border-bottom:1px solid var(--line-soft);
+    color:#2C3036;
+    vertical-align:top;
+  }
+  tbody tr:hover{background:#FBFAF7;}
+  td.fname{font-family:'IBM Plex Mono',monospace; font-weight:500; color:var(--ink); white-space:nowrap;}
+  td .desc{color:var(--ink-soft); font-size:13.3px;}
+
+  /* type badges mimicking Tableau's own field-type icons */
+  .tb{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    border-radius:5px;
+    padding:2px 6px;
+    white-space:nowrap;
+    letter-spacing:.01em;
+  }
+  .tb.num{background:#E6F6F1; color:var(--teal-deep);}
+  .tb.bool{background:#EFE9FB; color:#6A47C7;}
+  .tb.str{background:#EAF0FB; color:#3568C9;}
+  .tb.date{background:#FDEFE3; color:var(--amber);}
+  .tb.geo{background:#FCE9F1; color:var(--pink);}
+
+  .pill{
+    display:inline-block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10.5px;
+    font-weight:600;
+    letter-spacing:.04em;
+    text-transform:uppercase;
+    padding:3px 9px;
+    border-radius:20px;
+  }
+  .pill.measure{background:#0E9C82; color:#fff;}
+  .pill.dimension{background:#EDEAE0; color:#555;}
+  .pill.calc{background:#fff; color:var(--teal-deep); border:1.3px solid var(--teal);}
+
+  /* ---------- CODE / FORMULA BLOCK ---------- */
+  .formula{
+    background:var(--mono-bg);
+    color:var(--mono-text);
+    font-family:'IBM Plex Mono',monospace;
+    font-size:13px;
+    padding:14px 16px;
+    border-radius:8px;
+    line-height:1.6;
+    overflow-x:auto;
+    white-space:pre-wrap;
+    margin:8px 0 4px;
+  }
+  .formula .kw{color:var(--teal);}
+
+  /* ---------- FIELD CARD (calculated fields) ---------- */
+  .field-card{
+    border:1px solid var(--line);
+    border-radius:12px;
+    padding:20px 22px;
+    margin:18px 0;
+    background:var(--bg-card);
+  }
+  .field-card-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    flex-wrap:wrap;
+    gap:10px;
+    margin-bottom:10px;
+  }
+  .field-card-head h4{
+    margin:0;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:15px;
+    color:var(--ink);
+    font-weight:600;
+    text-transform:none;
+    letter-spacing:0;
+  }
+  .field-card p{margin:8px 0; font-size:14.3px;}
+  .badge-row{display:flex; gap:6px; align-items:center;}
+
+  .legend-key{
+    display:flex;
+    gap:22px;
+    flex-wrap:wrap;
+    margin:14px 0 0;
+    font-size:13px;
+    color:var(--ink-soft);
+  }
+  .legend-key div{display:flex; align-items:center;}
+
+  hr.div{border:none; border-top:1px solid var(--line); margin:40px 0;}
+
+  .two-col{display:grid; grid-template-columns:1fr 1fr; gap:30px;}
+  @media (max-width:700px){.two-col{grid-template-columns:1fr;}}
+
+  .icon-list{list-style:none; padding:0; margin:14px 0;}
+  .icon-list li{
+    display:flex;
+    gap:12px;
+    padding:10px 0;
+    border-bottom:1px solid var(--line-soft);
+    font-size:14.3px;
+  }
+  .icon-list li b{min-width:150px; display:inline-block; color:var(--ink);}
+  .icon-list li span{color:var(--ink-soft);}
+
+  footer{
+    margin-top:80px;
+    padding-top:24px;
+    border-top:1px solid var(--line);
+    font-size:12px;
+    color:var(--ink-faint);
+  }
+</style>
+</head>
+<body>
+
+<div class="shell">
+  <!-- ============ SIDEBAR ============ -->
+  <aside class="sidebar">
+    <div class="brand">
+      <span class="brand-mark"><span class="h">H</span><span class="r">R</span></span>
+    </div>
+    <div class="brand-sub">BI Documentation</div>
+
+    <div class="nav-group">
+      <nav id="sidenav">
+        <a href="#overview"><span class="num">01</span> Project Overview</a>
+        <a href="#data-source"><span class="num">02</span> Data Source &amp; Model</a>
+        <a href="#navigation"><span class="num">03</span> Dashboard Navigation</a>
+        <a href="#page-overview"><span class="num">04</span> Overview Page</a>
+        <a href="#page-details"><span class="num">05</span> Employee Details Page</a>
+        <a href="#calc-fields"><span class="num">06</span> Calculated Fields</a>
+        <a href="#field-dictionary"><span class="num">07</span> Field Dictionary</a>
+        <a href="#interactivity"><span class="num">08</span> Interactivity &amp; Actions</a>
+        <a href="#design-system"><span class="num">09</span> Design System</a>
+        <a href="#assumptions"><span class="num">10</span> Assumptions &amp; Open Items</a>
+      </nav>
+    </div>
+
+    <div class="sidebar-foot">
+      Tableau Desktop · Single CSV extract<br>
+      Last reviewed 29 Jun 2026 · v1.0
+    </div>
+  </aside>
+
+  <!-- ============ MAIN ============ -->
+  <main class="main">
+
+    <div class="cover">
+      <div class="eyebrow">Tableau · HR Analysis Project · Internal Documentation</div>
+      <h1>Human Resource Dashboard</h1>
+      <p class="lede">Reference documentation for the HR Analytics Tableau workbook — covering the data model, page-by-page functionality, calculated field logic, and the full dimension/measure dictionary. Written for both the analytics team maintaining the workbook and the HR stakeholders using it day to day.</p>
+      <div class="meta-row">
+        <div class="meta-item">Tool<span>Tableau Desktop</span></div>
+        <div class="meta-item">Data grain<span>1 row = 1 employee</span></div>
+        <div class="meta-item">Pages<span>Overview · Employee Details</span></div>
+        <div class="meta-item">Version<span>1.0 — 29 Jun 2026</span></div>
+      </div>
+    </div>
+
+    <!-- ============ 01 OVERVIEW ============ -->
+    <section id="overview">
+      <div class="sec-head"><span class="sec-num">01</span><h2>Project Overview</h2></div>
+      <p>The HR Analytics Dashboard is a two-page Tableau workbook built on top of a single employee-level dataset. It gives HR and business stakeholders a way to monitor headcount, hiring and attrition trends, workforce demographics, and pay equity at a glance, and gives HR operations a searchable, filterable record of every individual employee.</p>
+      <p>The workbook is deliberately split by use case: a high-level <strong>Overview</strong> page for trend-spotting and reporting, and a row-level <strong>Employee Details</strong> page for lookups, audits, and exports.</p>
+      <div class="two-col">
+        <div>
+          <h4>Primary audience</h4>
+          <ul class="std">
+            <li>HR leadership &amp; business stakeholders — workforce trends, attrition, pay equity</li>
+            <li>HR operations / people analytics — individual employee lookups and exports</li>
+          </ul>
+        </div>
+        <div>
+          <h4>What this document covers</h4>
+          <ul class="std">
+            <li>Data source and grain</li>
+            <li>Navigation and every visual element on both pages</li>
+            <li>Every calculated field, with formula and intent</li>
+            <li>Full dimension/measure dictionary and open items to confirm</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ 02 DATA SOURCE ============ -->
+    <section id="data-source">
+      <div class="sec-head"><span class="sec-num">02</span><h2>Data Source &amp; Model</h2></div>
+      <p>The workbook connects to a single flat file, <code>dataset.csv</code>, confirmed by the auto-generated <code>dataset.csv (Count)</code> measure in the data pane. There is no evidence of a secondary table or blend in the current view — every dimension and measure resolves against one employee-level extract.</p>
+
+      <h4>Grain</h4>
+      <p class="lead-text">One row per employee. <code>Employee ID</code> is the natural key.</p>
+
+      <h4>Core dimensions</h4>
+      <ul class="std">
+        <li><strong>Identity:</strong> Employee ID, First Name, Last Name, Full Name</li>
+        <li><strong>Demographics:</strong> Gender, Birthdate, Age Group, Education Level</li>
+        <li><strong>Role:</strong> Department → Job Title (hierarchy)</li>
+        <li><strong>Geography:</strong> Location → State → City (hierarchy), plus generated Latitude/Longitude</li>
+        <li><strong>Employment lifecycle:</strong> Hiredate, Termdate, Status, Performance Rating</li>
+      </ul>
+
+      <h4>Core measures</h4>
+      <p class="lead-text">Salary (raw), plus a set of calculated measures (Total Active, Total Hired, Total Terminated, Age, Length of Hire, and three ranking/highlight flags) detailed in <a href="#calc-fields">Section 06</a>.</p>
+
+      <div class="callout">
+        <strong>Note —</strong> This documentation describes the model as observed from the published data pane and dashboard screenshots. If the underlying workbook later adds a second data source, relationship, or extract refresh schedule, this section should be updated to match.
+      </div>
+    </section>
+
+    <!-- ============ 03 NAVIGATION ============ -->
+    <section id="navigation">
+      <div class="sec-head"><span class="sec-num">03</span><h2>Dashboard Navigation</h2></div>
+      <p>The workbook has exactly two dashboards, reached from icon buttons in the persistent left-hand rail:</p>
+      <ul class="icon-list">
+        <li><b>Bar-chart icon</b><span>Opens the <strong>Overview</strong> page — KPIs, trends, demographics, and pay.</span></li>
+        <li><b>Table icon</b><span>Opens the <strong>Employee Details</strong> page — the full, filterable employee list.</span></li>
+        <li><b>Info (i)</b><span>Workbook / author information panel.</span></li>
+        <li><b>Export — PDF</b><span>Downloads the current dashboard view as a PDF.</span></li>
+        <li><b>Export — Image</b><span>Downloads the current dashboard view as an image.</span></li>
+        <li><b>Follow / social icons</b><span>Links out to the author's profile pages (LinkedIn, GitHub, and a third profile link).</span></li>
+      </ul>
+      <div class="callout warn">
+        <strong>To confirm —</strong> whether quick filters set on one page (e.g. Gender, Status on Overview) carry over to the other page automatically, or are scoped per-dashboard. Verify under each filter's <em>Apply to Worksheets</em> setting in Tableau.
+      </div>
+    </section>
+
+    <!-- ============ 04 OVERVIEW PAGE ============ -->
+	<!-- Overview Page -->
+	<figure>
+		<img src="images/HR_Summary_noFL.png" alt="Overview page, filter bar hidden">
+		<figcaption>Overview page — global filter bar collapsed</figcaption>
+	</figure>
+
+	<h3>4.1 Global filter bar</h3>
+
+	<div class="shot-pair">
+		<figure>
+			<img src="images/HR_Summary_FL.png" alt="Filter bar visible">
+			<figcaption>Toggle ON — filter bar visible</figcaption>
+		</figure>
+
+		<figure>
+			<img src="images/HR_Summary_noFL.png" alt="Filter bar hidden">
+			<figcaption>Toggle OFF — filter bar hidden, Demographics container expands to fill the space</figcaption>
+		</figure>
+	</div>
+
+	<!-- Employee Details Page -->
+	<div class="shot-pair">
+		<figure>
+			<img src="images/HR_Deatils_FL.png" alt="Employee list, filters expanded">
+			<figcaption>Filter groups expanded</figcaption>
+		</figure>
+
+		<figure>
+			<img src="images/HR_Deatils_noFL.png" alt="Employee list, filters collapsed">
+			<figcaption>Filter groups collapsed</figcaption>
+		</figure>
+	</div>
+
+      <h3>4.2 Overview container</h3>
+      <ul class="std">
+        <li><strong>Active Employees</strong> — large KPI number; current headcount (see <code>Total Active</code>).</li>
+        <li><strong>Hired</strong> — KPI with an area sparkline trend; cumulative hires (see <code>Total Hired</code>).</li>
+        <li><strong>Terminated</strong> — KPI with an area sparkline trend; cumulative terminations (see <code>Total Terminated</code>).</li>
+        <li><strong>Departments</strong> — horizontal bar list, one row per department, ranked by hire volume. Each row pairs a teal "Hired" bar with a pink "Terminated" bar, driven by <code>Measure Names</code> / <code>Measure Values</code> sharing one axis.</li>
+        <li><strong>Locations</strong> — a shaded US state map (teal = states with employees) next to an HQ-vs-Branch split bar (≈70% HQ / 30% Branch in the current extract).</li>
+      </ul>
+      <div class="legend-key">
+        <div><span class="dot teal"></span> Hired / Active</div>
+        <div><span class="dot pink"></span> Terminated</div>
+      </div>
+
+      <h3>4.3 Demographics container</h3>
+      <ul class="std">
+        <li><strong>Gender</strong> — two donut charts (Female / Male share of headcount), each annotated with an inner Active-rate percentage.</li>
+        <li><strong>Education &amp; Age</strong> — a small-multiple bar/dot grid: rows are Education Level (H-Sch, Bachelor, Master, PhD), columns are Age buckets. The largest cell is rendered as a solid bar rather than a dot — this is the <code>Highlighted Max</code> flag at work.</li>
+        <li><strong>Education Performance</strong> — a sized-marker matrix crossing Performance Rating (Excellent, Good, Satisfactory, Needs Improvement) against Education Level; marker size encodes headcount, with the largest cell emphasized in teal.</li>
+      </ul>
+
+      <h3>4.4 Income container</h3>
+      <ul class="std">
+        <li><strong>Education &amp; Gender</strong> — average salary by gender within each education tier, shown as paired gender-icon markers with the dollar figure inline.</li>
+        <li><strong>Age vs Salary</strong> — a scatter plot of average salary by age, one diamond mark per job title; outlying high-paying titles (e.g. Finance Manager, IT Manager, Sales Manager, HR Manager) are labelled directly on the chart, with a dashed reference line marking the median age.</li>
+      </ul>
+
+      <div class="callout">
+        Section headers "Overview", "Demographics", and "Income" each carry a <em>Click Here To Filter</em> hint — clicking inside these containers triggers a Tableau dashboard filter action against the rest of the page. See <a href="#interactivity">Section 08</a>.
+      </div>
+    </section>
+
+    <!-- ============ 05 EMPLOYEE DETAILS PAGE ============ -->
+    <section id="page-details">
+      <div class="sec-head"><span class="sec-num">05</span><h2>Employee Details Page</h2></div>
+      <p>A full employee register with one row per person and seven expandable filter groups across the header: <strong>ID, Demographics, Role, Geographics, Salary, Status, Length of Employment</strong>. Clicking the arrow beside any group expands it in place to reveal its filter controls — no navigation away from the table.</p>
+
+      <div class="shot-pair">
+        <figure>
+          <img src="{{IMG_DETAILS_FL}}" alt="Employee list, filters expanded">
+          <figcaption>Filter groups expanded</figcaption>
+        </figure>
+        <figure>
+          <img src="{{IMG_DETAILS_NOFL}}" alt="Employee list, filters collapsed">
+          <figcaption>Filter groups collapsed</figcaption>
+        </figure>
+      </div>
+
+      <h3>5.1 Filter groups</h3>
+      <table>
+        <thead><tr><th>Group</th><th>Fields exposed</th></tr></thead>
+        <tbody>
+          <tr><td class="fname">ID</td><td>Employee ID</td></tr>
+          <tr><td class="fname">Demographics</td><td>Full Name, Gender, Age, Education Level</td></tr>
+          <tr><td class="fname">Role</td><td>Department, Job Title</td></tr>
+          <tr><td class="fname">Geographics</td><td>Location, State, City</td></tr>
+          <tr><td class="fname">Salary</td><td>Salary — range slider (current extract: $51,835–$149,377)</td></tr>
+          <tr><td class="fname">Status</td><td>Status, Year of Hiredate, Year of Termdate</td></tr>
+          <tr><td class="fname">Length of Employment</td><td>Length of Hire — range slider, upper bound shown as <em>"To Null"</em> for still-active employees</td></tr>
+        </tbody>
+      </table>
+
+      <h3>5.2 Table columns</h3>
+      <ul class="std">
+        <li><strong>ID</strong> — Employee ID</li>
+        <li><strong>Demographics</strong> — Full Name with gender icon, age, and education level on a second line</li>
+        <li><strong>Role</strong> — Job Title with Department on a second line</li>
+        <li><strong>Geographics</strong> — City with State on a second line</li>
+        <li><strong>Salary</strong> — formatted currency</li>
+        <li><strong>Status</strong> — colour-coded dot (teal = Hired, pink = Terminated) with text label</li>
+        <li><strong>Length of Employment</strong> — tenure shown as a rounded teal pill, e.g. <code>8 Years</code></li>
+      </ul>
+
+      <div class="callout warn">
+        <strong>To confirm —</strong> whether the Length-of-Employment pill changes colour or intensity for long-terminated employees, or is a fixed teal regardless of status/duration.
+      </div>
+    </section>
+
+    <!-- ============ 06 CALCULATED FIELDS ============ -->
+    <section id="calc-fields">
+      <div class="sec-head"><span class="sec-num">06</span><h2>Calculated Fields Reference</h2></div>
+      <p class="lead-text">Every calculated field used on the two dashboards, in the order they appear in the data pane. Fields marked <span class="tb date" style="color:var(--amber);background:#FDEFE3;">inferred</span> were not supplied with an exact formula and should be checked against the live workbook.</p>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Total Active</h4><span class="pill measure">Measure</span></div>
+        <p>Current headcount — employees who are working right now.</p>
+        <div class="formula"><span class="kw">// formula not supplied — typical implementation:</span>
+IF [Status] = 'Active' THEN 1 END
+<span class="kw">// aggregated as SUM</span></div>
+        <p class="desc">Confirm the exact condition against the live field — see <a href="#assumptions">Section 10</a>.</p>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Total Hired</h4><span class="pill measure">Measure</span></div>
+        <p>Total number of people the company has ever hired, regardless of current status.</p>
+        <div class="formula"><span class="kw">// formula not supplied — typical implementation:</span>
+COUNT([Employee ID])
+<span class="kw">// i.e. one count per row in the extract</span></div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Total Terminated</h4><span class="pill measure">Measure</span></div>
+        <p>Total number of people the company has terminated to date.</p>
+        <div class="formula"><span class="kw">// formula not supplied — typical implementation:</span>
+IF [Status] = 'Terminated' THEN 1 END
+<span class="kw">// aggregated as SUM</span></div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Length of Hire</h4><span class="pill measure">Measure</span></div>
+        <p>Tenure in whole years — counts to today if still employed, or to the termination date if not.</p>
+        <div class="formula">IF ISNULL([Termdate]) THEN
+  DATEDIFF(<span class="kw">'year'</span>, [Hiredate], TODAY())
+ELSE
+  DATEDIFF(<span class="kw">'year'</span>, [Hiredate], [Termdate])
+END</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Age</h4><span class="pill measure">Measure</span></div>
+        <p>Employee age in whole years, from Birthdate.</p>
+        <div class="formula"><span class="kw">// formula not supplied — inferred, same pattern as Length of Hire:</span>
+DATEDIFF(<span class="kw">'year'</span>, [Birthdate], TODAY())</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Rank Top 1</h4><span class="pill calc">Boolean</span></div>
+        <p>Flags the single category with the highest <code>% Total Hired</code> within the current view partition (e.g. top department by hire share).</p>
+        <div class="formula">RANK([% Total Hired]) &lt;= 1</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Rank Top 2 Job</h4><span class="pill calc">Boolean</span></div>
+        <p>Flags the top two job titles by hire share — used to spotlight leading roles.</p>
+        <div class="formula">RANK([% Total Hired]) &lt;= 2</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>Highlighted Max</h4><span class="pill calc">Boolean</span></div>
+        <p>Flags the mark holding the maximum <code>Total Hired</code> value in the current partition — used to render the leading bar/cell with emphasis (e.g. the solid bar in the Education &amp; Age grid).</p>
+        <div class="formula">WINDOW_MAX([Total Hired]) = [Total Hired]</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>% Total Hired</h4><span class="pill measure">Measure</span></div>
+        <p>Each category's share of total hires within the current partition. Feeds <code>Rank Top 1</code> and <code>Rank Top 2 Job</code> directly.</p>
+        <div class="formula"><span class="kw">// formula not supplied — inferred table calculation:</span>
+SUM([Total Hired]) / TOTAL(SUM([Total Hired]))</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>% Total Terminated</h4><span class="pill measure">Measure</span></div>
+        <p>Each category's share of total terminations within the current partition.</p>
+        <div class="formula"><span class="kw">// formula not supplied — inferred table calculation:</span>
+SUM([Total Terminated]) / TOTAL(SUM([Total Terminated]))</div>
+      </div>
+
+      <div class="field-card">
+        <div class="field-card-head"><h4>% Highlighted Max</h4><span class="pill calc">Boolean</span></div>
+        <p>Percentage-based counterpart of <code>Highlighted Max</code> — flags the mark with the highest <code>% Total Hired</code> in the partition.</p>
+        <div class="formula"><span class="kw">// formula not supplied — inferred, mirrors Highlighted Max:</span>
+WINDOW_MAX([% Total Hired]) = [% Total Hired]</div>
+      </div>
+
+      <div class="callout warn">
+        <strong>Action needed —</strong> five fields above (<code>Total Active</code>, <code>Total Hired</code>, <code>Total Terminated</code>, <code>Age</code>, <code>% Total Hired</code>, <code>% Total Terminated</code>, <code>% Highlighted Max</code>) were described by intent rather than exact syntax. Paste the real formulas from Tableau's calculation editor in and this section is done.
+      </div>
+    </section>
+
+    <!-- ============ 07 FIELD DICTIONARY ============ -->
+    <section id="field-dictionary">
+      <div class="sec-head"><span class="sec-num">07</span><h2>Field Dictionary</h2></div>
+      <p class="lead-text">Every field visible in the data pane, with Tableau's own type icon reproduced as a badge: <span class="tb str">Abc</span> string · <span class="tb num">#</span> number · <span class="tb date">▦</span> date · <span class="tb bool">T|F</span> boolean · <span class="tb geo">⊕</span> geographic role.</p>
+
+      <h3>7.1 Dimensions</h3>
+      <table>
+        <thead><tr><th style="width:34px;"></th><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Age Group</td><td class="desc">Pre-binned age bracket used for grouping in the Demographics charts (e.g. &gt;25, 25–34, 35–44, 45–54, +55).</td></tr>
+          <tr><td><span class="tb date">▦</span></td><td class="fname">Birthdate</td><td class="desc">Employee date of birth; source for the <code>Age</code> calculation.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Department</td><td class="desc">Organisational department (Operations, Sales, Customer Service, IT, Marketing, Finance, HR). Parent of Job Title in the hierarchy.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Job Title</td><td class="desc">Specific role title, nested under Department.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Education Level</td><td class="desc">Highest education attained — High School, Bachelor, Master, PhD.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Employee ID</td><td class="desc">Unique employee identifier (format <code>00-XXXXXXXX</code>). Natural key for the dataset.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">First Name / Last Name / Full Name</td><td class="desc">Employee name fields; Full Name is used throughout the UI.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Gender</td><td class="desc">Male / Female.</td></tr>
+          <tr><td><span class="tb date">▦</span></td><td class="fname">Hiredate</td><td class="desc">Date the employee was hired.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Performance Rating</td><td class="desc">Excellent, Good, Satisfactory, Needs Improvement.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Location (State, City)</td><td class="desc">Work location hierarchy — State above City. Drives the Latitude/Longitude generated fields and the state map.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Status</td><td class="desc">Employment state behind the Hired/Terminated colour legend used across both pages.</td></tr>
+          <tr><td><span class="tb date">▦</span></td><td class="fname">Termdate</td><td class="desc">Date of termination; null while the employee is active. Drives the null-aware branch of <code>Length of Hire</code>.</td></tr>
+        </tbody>
+      </table>
+
+      <h3>7.2 Measures</h3>
+      <table>
+        <thead><tr><th style="width:34px;"></th><th>Field</th><th>Description</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tb num">#</span></td><td class="fname">Salary</td><td class="desc">Raw annual compensation, as loaded from the source file.</td></tr>
+          <tr><td><span class="tb num">#</span></td><td class="fname">Total Active / Total Hired / Total Terminated</td><td class="desc">See <a href="#calc-fields">Section 06</a>.</td></tr>
+          <tr><td><span class="tb num">#</span></td><td class="fname">Age / Length of Hire</td><td class="desc">See <a href="#calc-fields">Section 06</a>.</td></tr>
+          <tr><td><span class="tb bool">T|F</span></td><td class="fname">Rank Top 1 / Rank Top 2 Job / Highlighted Max / % Highlighted Max</td><td class="desc">See <a href="#calc-fields">Section 06</a>.</td></tr>
+          <tr><td><span class="tb num">#</span></td><td class="fname">% Total Hired / % Total Terminated</td><td class="desc">See <a href="#calc-fields">Section 06</a>.</td></tr>
+          <tr><td><span class="tb num">#</span></td><td class="fname">dataset.csv (Count)</td><td class="desc">Tableau's auto-generated record-count measure for the source file — one record per employee.</td></tr>
+          <tr><td><span class="tb geo">⊕</span></td><td class="fname">Latitude / Longitude (generated)</td><td class="desc">Auto-generated geographic role fields, resolved from the Location hierarchy, used to plot the state map.</td></tr>
+          <tr><td><span class="tb str">Abc</span></td><td class="fname">Measure Names / Measure Values</td><td class="desc">Tableau's built-in fields, used to combine Hired and Terminated counts onto one shared axis/legend (e.g. the Departments bar list).</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ============ 08 INTERACTIVITY ============ -->
+    <section id="interactivity">
+      <div class="sec-head"><span class="sec-num">08</span><h2>Interactivity &amp; Actions</h2></div>
+      <ul class="std">
+        <li><strong>Global quick filters (Overview)</strong> — Gender, Location, Status, Hiredate; shown or hidden as a group via the <em>Filter</em> toggle switch.</li>
+        <li><strong>Click-to-filter containers (Overview)</strong> — the Overview, Demographics, and Income section headers carry "Click Here To Filter" hints, indicating a Tableau dashboard filter action fires when a mark inside that container is clicked.</li>
+        <li><strong>Expandable column filters (Employee Details)</strong> — each of the seven header groups (ID, Demographics, Role, Geographics, Salary, Status, Length of Employment) expands via its arrow icon to reveal native quick filters for that group's fields.</li>
+        <li><strong>Shared status legend</strong> — the Hired/Terminated dot legend (top-right on both pages) is visually consistent and may double as a highlighter; confirm in the workbook whether it's wired as a Tableau Highlight Action.</li>
+        <li><strong>Export controls</strong> — PDF and Image export buttons in the left rail, standard Tableau dashboard downloads.</li>
+      </ul>
+    </section>
+
+    <!-- ============ 09 DESIGN SYSTEM ============ -->
+    <section id="design-system">
+      <div class="sec-head"><span class="sec-num">09</span><h2>Design System</h2></div>
+      <p>The dashboard itself (not this document) runs a dark theme with a two-colour semantic palette carried through every chart, badge, and legend:</p>
+      <table>
+        <thead><tr><th>Token</th><th>Approx. value</th><th>Used for</th></tr></thead>
+        <tbody>
+          <tr><td class="fname">Background</td><td class="desc mono">#14171C–ish near-black</td><td class="desc">Page and card backgrounds</td></tr>
+          <tr><td class="fname">Teal</td><td class="desc mono">≈ #1FBF9C</td><td class="desc">Hired / Active / positive values, primary emphasis</td></tr>
+          <tr><td class="fname">Pink / magenta</td><td class="desc mono">≈ #E8368F</td><td class="desc">Terminated / negative values</td></tr>
+          <tr><td class="fname">Neutral grey</td><td class="desc mono">mid-grey</td><td class="desc">"All" filter states, inactive markers</td></tr>
+        </tbody>
+      </table>
+      <p class="lead-text">Tenure pills on the Employee Details table reuse the teal token regardless of duration; the HQ/Branch and donut charts reuse the same two-colour logic rather than introducing new hues. Keeping any future additions to this two-colour system (plus neutral grey) will preserve the existing visual language.</p>
+    </section>
+
+    <!-- ============ 10 ASSUMPTIONS ============ -->
+    <section id="assumptions">
+      <div class="sec-head"><span class="sec-num">10</span><h2>Assumptions &amp; Open Items</h2></div>
+      <p class="lead-text">Items below were inferred from screenshots and stakeholder notes rather than the live workbook. Confirm and update before treating this document as the system of record.</p>
+      <ul class="std">
+        <li>Exact formulas for <code>Total Active</code>, <code>Total Hired</code>, <code>Total Terminated</code>, and <code>Age</code> — described by intent only; see <a href="#calc-fields">Section 06</a>.</li>
+        <li>Exact formulas for <code>% Total Hired</code>, <code>% Total Terminated</code>, and <code>% Highlighted Max</code> — not supplied at all; current text is a reasonable inference, not a confirmed calc.</li>
+        <li>Whether <code>Status</code> stores values as Active/Terminated, Hired/Terminated, or some other set — the visible legend only shows two states (Hired, Terminated) while the KPI label uses "Active."</li>
+        <li>Whether quick filters apply across both dashboards or are scoped to the page they're placed on.</li>
+        <li>The exact target sheets/fields behind the "Click Here To Filter" actions on the Overview page.</li>
+        <li>Whether the Length-of-Employment pill is intended to vary by tenure/status, or is a fixed teal styling choice.</li>
+      </ul>
+    </section>
+
+    <footer>
+      HR Analytics Dashboard — BI Documentation · v1.0 · Generated 29 Jun 2026
+    </footer>
+
+  </main>
+</div>
+
+<script>
+  // scrollspy: highlight the sidebar link matching the section in view
+  const links = Array.from(document.querySelectorAll('#sidenav a'));
+  const sections = links.map(a => document.querySelector(a.getAttribute('href')));
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      const idx = sections.indexOf(entry.target);
+      if (idx === -1) return;
+      if (entry.isIntersecting) {
+        links.forEach(l => l.classList.remove('active'));
+        links[idx].classList.add('active');
+      }
+    });
+  }, { rootMargin: '-15% 0px -70% 0px', threshold: 0 });
+  sections.forEach(s => s && io.observe(s));
+</script>
+
+</body>
+</html>
