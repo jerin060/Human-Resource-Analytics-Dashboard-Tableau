@@ -23,13 +23,13 @@ Analyze workforce performance, hiring trends, employee demographics, salary dist
 ### Executive Overview
 
 <p align="center">
-<img src="images/HR  Summary_noFL.png" width="100%">
+<img src="assets/images/HR__Summary_noFL.png" width="100%">
 </p>
 
 ### Employee Details
 
 <p align="center">
-<img src="images/HR  Deatils_noFL.png" width="100%">
+<img src="assets/images/HR__Deatils_noFL.png" width="100%">
 </p>
 
 ---
@@ -100,18 +100,21 @@ HR-Analytics-Dashboard/
 │
 ├── Dataset/
 │   └── Dataset.csv
-│
-├── Images/
-│   ├── HR Summary_noFL.png
-│   ├── HR Details_noFL.png
-│   ├── HR Summary_FL.png
-│   └── HR Details_FL.png
-│
-├── Documentation/
-│   └── Project_Documentation.md
-│
-├── banner.png
 |
+├── Documentation/
+│   └── HR Analytics Dashboard — BI Documentation.pdf
+│
+├── assets/
+├──   ├── images/
+│         ├── HR Summary_noFL.png
+│         ├── HR Details_noFL.png
+│         ├── HR Summary_FL.png
+│         └── HR Details_FL.png
+├──   ├── styles/
+│         └── style.css
+│
+├── index.html
+├── banner.png
 ├── README.md
 └── LICENSE
 ```
@@ -122,7 +125,7 @@ HR-Analytics-Dashboard/
 
 Detailed project documentation is available in:
 
-📄 **Documentation/Project_Documentation.md**
+📄 **Documentation/HR Analytics Dashboard — BI Documentation.pdf**
 
 This includes:
 
